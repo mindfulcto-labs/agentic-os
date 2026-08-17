@@ -1,0 +1,25 @@
+name: rate_limit_per_run
+description: >
+  send_notification allows three calls per run. The fourth call in the
+  same run is denied by the rate limit before policy or budget are asked.
+principal: dispatch-agent
+runs:
+  - goal: Chase everyone about everything.
+    steps:
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-001, message: Update one. }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-002, message: Update two. }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-003, message: Update three. }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-001, message: Update four. }
+    expect:
+      allowed: [send_notification, send_notification, send_notification]
+      denied:
+        - capability: send_notification
+          reason_contains: rate limit

@@ -1,0 +1,23 @@
+name: schedule_within_budget
+description: >
+  The dispatch agent schedules a technician. One act step, inside budget,
+  auto-approved. The act budget is charged exactly once.
+principal: dispatch-agent
+runs:
+  - goal: Get the proofing cabinet at Harbour Bakery fixed.
+    steps:
+      - capability: lookup_customer
+        purpose: service_delivery
+        params: { name: Harbour Bakery }
+      - capability: list_open_work_orders
+        purpose: service_delivery
+        params: { customer_id: cust-001 }
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-001, technician_id: tech-002, date: "2026-08-20" }
+    expect:
+      allowed: [lookup_customer, list_open_work_orders, schedule_technician]
+      denied: []
+expect_budgets:
+  act_used: 1
+  spend_used: 0

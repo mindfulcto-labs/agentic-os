@@ -1,0 +1,15 @@
+policies:
+  - name: no-spend-after-denial
+    description: >
+      Once any invocation in a run has been denied, block spend-tier
+      capabilities for the rest of that run. A denied agent should not
+      go on to commit money.
+    rule: no_spend_after_denial
+
+  - name: max-act-steps-per-run
+    description: >
+      A single run may perform at most four act or spend steps. Longer
+      chains of mutations need a human to restart the agent with intent.
+    rule: max_act_steps
+    params:
+      limit: 4

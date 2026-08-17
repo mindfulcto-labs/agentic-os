@@ -1,0 +1,22 @@
+name: happy_path_lookup
+description: >
+  A read-only agent grounds itself in the ontology: it looks up a customer
+  and lists open work orders. Everything is read tier and allowed.
+principal: reporting-agent
+runs:
+  - goal: What is outstanding for Harbour Bakery?
+    steps:
+      - capability: lookup_customer
+        purpose: service_delivery
+        params: { name: Harbour Bakery }
+        rationale: Ground the run in the customer record.
+      - capability: list_open_work_orders
+        purpose: service_delivery
+        params: { customer_id: cust-001 }
+        rationale: Find open work orders for the customer.
+    expect:
+      allowed: [lookup_customer, list_open_work_orders]
+      denied: []
+expect_budgets:
+  act_used: 0
+  spend_used: 0

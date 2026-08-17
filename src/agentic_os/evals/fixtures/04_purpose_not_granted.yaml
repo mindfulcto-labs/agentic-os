@@ -1,0 +1,16 @@
+name: purpose_not_granted
+description: >
+  The dispatch agent requests a read capability for a purpose no grant
+  covers. Purpose is checked before anything else about the capability.
+principal: dispatch-agent
+runs:
+  - goal: Build a mailing list.
+    steps:
+      - capability: lookup_customer
+        purpose: marketing
+        params: { name: Harbour Bakery }
+    expect:
+      allowed: []
+      denied:
+        - capability: lookup_customer
+          reason_contains: purpose

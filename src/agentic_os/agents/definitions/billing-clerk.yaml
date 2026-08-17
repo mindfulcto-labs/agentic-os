@@ -1,0 +1,20 @@
+name: billing-clerk
+description: >
+  Drafts invoices for completed work and sends billing notices. Planned
+  by an LLM when an API key is present; the governor judges every step
+  the model proposes, exactly as it judges scripted ones.
+goal_template: Invoice completed work orders and notify the customers.
+capabilities:
+  - lookup_customer
+  - draft_invoice
+  - send_notification
+purposes:
+  - billing
+risk_ceiling: spend
+budgets:
+  act_per_day: 3
+  spend_per_day: 2
+policies:
+  - no-spend-after-denial
+  - max-act-steps-per-run
+planner: llm

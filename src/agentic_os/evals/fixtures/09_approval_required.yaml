@@ -1,0 +1,22 @@
+name: approval_required
+description: >
+  With auto-approval off and no approver configured, act-tier invocations
+  are denied at the approval gate. Read steps still pass.
+principal: dispatch-agent
+auto_approve: false
+runs:
+  - goal: Schedule the proofing cabinet repair.
+    steps:
+      - capability: list_open_work_orders
+        purpose: service_delivery
+        params: { customer_id: cust-001 }
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-001, technician_id: tech-002, date: "2026-08-20" }
+    expect:
+      allowed: [list_open_work_orders]
+      denied:
+        - capability: schedule_technician
+          reason_contains: approval
+expect_budgets:
+  act_used: 0

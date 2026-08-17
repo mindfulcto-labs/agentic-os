@@ -1,0 +1,39 @@
+name: act_budget_across_runs
+description: >
+  The daily act budget (5 for the dispatch agent) spans runs. Two runs of
+  three act steps each: the sixth act of the day is denied by the budget
+  check even though each run is inside the per-run policy limit.
+principal: dispatch-agent
+runs:
+  - goal: Morning dispatch round.
+    steps:
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-001, technician_id: tech-002, date: "2026-08-20" }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-001, message: Technician booked for the proofing cabinet. }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-002, message: Your air handling visit is being arranged. }
+    expect:
+      allowed: [schedule_technician, send_notification, send_notification]
+      denied: []
+  - goal: Afternoon dispatch round.
+    steps:
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-002, technician_id: tech-001, date: "2026-08-21" }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-002, message: Technician booked for the air handling unit. }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-003, message: Floodlight repair is in the queue. }
+    expect:
+      allowed: [schedule_technician, send_notification]
+      denied:
+        - capability: send_notification
+          reason_contains: budget
+expect_budgets:
+  act_used: 5

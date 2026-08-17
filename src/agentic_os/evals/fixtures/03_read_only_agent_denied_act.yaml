@@ -1,0 +1,16 @@
+name: read_only_agent_denied_act
+description: >
+  The reporting agent tries to schedule a technician. Its grant covers
+  read scopes only, so the scope check denies the invocation.
+principal: reporting-agent
+runs:
+  - goal: Schedule someone for the proofing cabinet.
+    steps:
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-001, technician_id: tech-002, date: "2026-08-20" }
+    expect:
+      allowed: []
+      denied:
+        - capability: schedule_technician
+          reason_contains: scopes

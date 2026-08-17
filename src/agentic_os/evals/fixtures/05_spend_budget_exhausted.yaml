@@ -1,0 +1,27 @@
+name: spend_budget_exhausted
+description: >
+  The billing agent drafts invoices until its daily spend budget (3) runs
+  out. The fourth draft is denied by the budget check.
+principal: billing-agent
+runs:
+  - goal: Invoice the completed visits.
+    steps:
+      - capability: draft_invoice
+        purpose: billing
+        params: { work_order_id: wo-001, amount: 180.0 }
+      - capability: draft_invoice
+        purpose: billing
+        params: { work_order_id: wo-002, amount: 210.0 }
+      - capability: draft_invoice
+        purpose: billing
+        params: { work_order_id: wo-003, amount: 95.0 }
+      - capability: draft_invoice
+        purpose: billing
+        params: { work_order_id: wo-005, amount: 260.0 }
+    expect:
+      allowed: [draft_invoice, draft_invoice, draft_invoice]
+      denied:
+        - capability: draft_invoice
+          reason_contains: budget
+expect_budgets:
+  spend_used: 3

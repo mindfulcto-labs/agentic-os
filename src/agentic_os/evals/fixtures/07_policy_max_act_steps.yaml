@@ -1,0 +1,35 @@
+name: policy_max_act_steps
+description: >
+  The max-act-steps-per-run policy caps one run at four act or spend
+  steps. The fifth mutation in a single run is denied by policy, even
+  though scopes, tier and budget would all have allowed it.
+principal: dispatch-agent
+runs:
+  - goal: Batch-schedule everything open.
+    steps:
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-001, technician_id: tech-002, date: "2026-08-20" }
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-002, technician_id: tech-001, date: "2026-08-20" }
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-003, technician_id: tech-002, date: "2026-08-21" }
+      - capability: schedule_technician
+        purpose: service_delivery
+        params: { work_order_id: wo-005, technician_id: tech-003, date: "2026-08-21" }
+      - capability: send_notification
+        purpose: service_delivery
+        params: { customer_id: cust-001, message: All visits are booked. }
+    expect:
+      allowed:
+        [
+          schedule_technician,
+          schedule_technician,
+          schedule_technician,
+          schedule_technician,
+        ]
+      denied:
+        - capability: send_notification
+          reason_contains: policy

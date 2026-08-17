@@ -1,0 +1,22 @@
+name: no_spend_after_denial
+description: >
+  The dispatch agent is denied a scheduling step (wrong purpose for its
+  write scopes), then tries to draft an invoice. The no-spend-after-denial
+  policy blocks the spend step for the rest of the run.
+principal: dispatch-agent
+runs:
+  - goal: Reschedule and invoice in one pass.
+    steps:
+      - capability: schedule_technician
+        purpose: billing
+        params: { work_order_id: wo-001, technician_id: tech-002, date: "2026-08-20" }
+      - capability: draft_invoice
+        purpose: billing
+        params: { work_order_id: wo-001, amount: 240.0 }
+    expect:
+      allowed: []
+      denied:
+        - capability: schedule_technician
+          reason_contains: scopes
+        - capability: draft_invoice
+          reason_contains: no-spend-after-denial

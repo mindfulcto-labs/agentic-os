@@ -1,0 +1,59 @@
+principals:
+  - id: dispatch-agent
+    kind: agent
+    display_name: Dispatch Agent
+    description: >
+      Plans and schedules field work. May draft invoices for completed visits.
+    grants:
+      - scopes: [customers:read, work_orders:read, work_orders:write, notifications:send]
+        purposes: [service_delivery]
+        max_risk_tier: act
+      - scopes: [customers:read, invoices:write]
+        purposes: [billing]
+        max_risk_tier: spend
+    budgets:
+      act_per_day: 5
+      spend_per_day: 2
+
+  - id: reporting-agent
+    kind: agent
+    display_name: Reporting Agent
+    description: Read-only agent that answers questions about the business.
+    grants:
+      - scopes: [customers:read, work_orders:read]
+        purposes: [service_delivery, billing]
+        max_risk_tier: read
+    budgets:
+      act_per_day: 0
+      spend_per_day: 0
+
+  - id: billing-agent
+    kind: agent
+    display_name: Billing Agent
+    description: Drafts invoices and sends billing notifications.
+    grants:
+      - scopes: [customers:read, invoices:write, notifications:send]
+        purposes: [billing]
+        max_risk_tier: spend
+    budgets:
+      act_per_day: 2
+      spend_per_day: 3
+
+  - id: duty-manager
+    kind: human
+    display_name: Duty Manager
+    description: Human operator with the widest grants. Approves gated actions.
+    grants:
+      - scopes:
+          [
+            customers:read,
+            work_orders:read,
+            work_orders:write,
+            invoices:write,
+            notifications:send,
+          ]
+        purposes: [service_delivery, billing]
+        max_risk_tier: spend
+    budgets:
+      act_per_day: 10
+      spend_per_day: 10

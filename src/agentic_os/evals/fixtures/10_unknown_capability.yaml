@@ -1,0 +1,16 @@
+name: unknown_capability
+description: >
+  A planner hallucinates a capability that does not exist. The registry
+  check denies it. Denials are results, not crashes.
+principal: dispatch-agent
+runs:
+  - goal: Teleport a technician to site.
+    steps:
+      - capability: teleport_technician
+        purpose: service_delivery
+        params: { technician_id: tech-001 }
+    expect:
+      allowed: []
+      denied:
+        - capability: teleport_technician
+          reason_contains: not registered

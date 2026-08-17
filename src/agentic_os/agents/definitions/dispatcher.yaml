@@ -1,0 +1,37 @@
+name: dispatcher
+description: >
+  Schedules field work. Grounds itself in the customer and work-order
+  graph, books a technician, and tells the customer. No billing rights.
+goal_template: Get open work at a customer site scheduled and confirmed.
+capabilities:
+  - lookup_customer
+  - list_open_work_orders
+  - schedule_technician
+  - send_notification
+purposes:
+  - service_delivery
+risk_ceiling: act
+budgets:
+  act_per_day: 5
+  spend_per_day: 0
+policies:
+  - no-spend-after-denial
+  - max-act-steps-per-run
+planner: scripted
+script:
+  - capability: lookup_customer
+    purpose: service_delivery
+    params: { name: Harbour Bakery }
+    rationale: Ground the run in the customer record and its sites.
+  - capability: list_open_work_orders
+    purpose: service_delivery
+    params: { customer_id: cust-001 }
+    rationale: Find what is open before booking anyone.
+  - capability: schedule_technician
+    purpose: service_delivery
+    params: { work_order_id: wo-001, technician_id: tech-002, date: "2026-08-20" }
+    rationale: Tom covers heating and is based in Whitby.
+  - capability: send_notification
+    purpose: service_delivery
+    params: { customer_id: cust-001, message: Tom Ashworth is booked for 20 August. }
+    rationale: Confirm the visit with the customer.

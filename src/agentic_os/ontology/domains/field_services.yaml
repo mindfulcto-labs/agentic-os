@@ -1,0 +1,170 @@
+name: field-services
+description: >
+  A small field-services company. Customers own sites. Work orders are raised
+  at sites. Technicians are assigned to work orders. Invoices bill work orders.
+
+entity_types:
+  - name: customer
+    description: A business that buys maintenance services.
+    attributes:
+      name: str
+      tier: str
+      contact_email: str
+  - name: site
+    description: A physical location owned by a customer.
+    attributes:
+      address: str
+      access_notes: str
+  - name: work_order
+    description: A request to fix or service equipment at a site.
+    attributes:
+      summary: str
+      status: str          # open, scheduled, done, cancelled
+      priority: str        # low, normal, high
+      scheduled_date: str
+  - name: technician
+    description: A field engineer who carries out work orders.
+    attributes:
+      name: str
+      skills: list
+      home_base: str
+  - name: invoice
+    description: A bill for a completed or scheduled work order.
+    attributes:
+      amount: float
+      currency: str
+      status: str          # draft, sent, paid
+
+relation_types:
+  - name: belongs_to
+    source: site
+    target: customer
+    description: A site belongs to a customer.
+  - name: raised_at
+    source: work_order
+    target: site
+    description: A work order is raised at a site.
+  - name: assigned_to
+    source: work_order
+    target: technician
+    description: A work order is assigned to a technician.
+  - name: bills
+    source: invoice
+    target: work_order
+    description: An invoice bills a work order.
+
+entities:
+  - id: cust-001
+    type: customer
+    attributes:
+      name: Harbour Bakery
+      tier: standard
+      contact_email: ops@harbourbakery.example
+  - id: cust-002
+    type: customer
+    attributes:
+      name: Northgate Clinic
+      tier: priority
+      contact_email: facilities@northgateclinic.example
+  - id: cust-003
+    type: customer
+    attributes:
+      name: Fenwick Farm Supplies
+      tier: standard
+      contact_email: yard@fenwickfarm.example
+
+  - id: site-001
+    type: site
+    attributes:
+      address: 12 Quay Street, Whitby
+      access_notes: Rear entrance, ask for the shift lead.
+  - id: site-002
+    type: site
+    attributes:
+      address: 4 Northgate, York
+      access_notes: Sign in at reception, escort required.
+  - id: site-003
+    type: site
+    attributes:
+      address: Fenwick Yard, Malton Road
+      access_notes: Open yard, forklift traffic.
+  - id: site-004
+    type: site
+    attributes:
+      address: 8 Quay Street, Whitby
+      access_notes: Shared loading bay with number 12.
+
+  - id: wo-001
+    type: work_order
+    attributes:
+      summary: Oven proofing cabinet not holding temperature.
+      status: open
+      priority: high
+      scheduled_date: ""
+  - id: wo-002
+    type: work_order
+    attributes:
+      summary: Waiting-room air handling unit rattling.
+      status: open
+      priority: normal
+      scheduled_date: ""
+  - id: wo-003
+    type: work_order
+    attributes:
+      summary: Yard floodlight bank partially out.
+      status: open
+      priority: low
+      scheduled_date: ""
+  - id: wo-004
+    type: work_order
+    attributes:
+      summary: Annual boiler service.
+      status: done
+      priority: normal
+      scheduled_date: "2026-05-11"
+  - id: wo-005
+    type: work_order
+    attributes:
+      summary: Walk-in fridge door seal replacement.
+      status: open
+      priority: normal
+      scheduled_date: ""
+
+  - id: tech-001
+    type: technician
+    attributes:
+      name: Priya Nair
+      skills: [hvac, refrigeration]
+      home_base: York
+  - id: tech-002
+    type: technician
+    attributes:
+      name: Tom Ashworth
+      skills: [electrical, heating]
+      home_base: Whitby
+  - id: tech-003
+    type: technician
+    attributes:
+      name: Lena Kovacs
+      skills: [heating, plumbing]
+      home_base: Malton
+
+  - id: inv-001
+    type: invoice
+    attributes:
+      amount: 320.0
+      currency: GBP
+      status: paid
+
+relations:
+  - { type: belongs_to, source_id: site-001, target_id: cust-001 }
+  - { type: belongs_to, source_id: site-002, target_id: cust-002 }
+  - { type: belongs_to, source_id: site-003, target_id: cust-003 }
+  - { type: belongs_to, source_id: site-004, target_id: cust-001 }
+  - { type: raised_at, source_id: wo-001, target_id: site-001 }
+  - { type: raised_at, source_id: wo-002, target_id: site-002 }
+  - { type: raised_at, source_id: wo-003, target_id: site-003 }
+  - { type: raised_at, source_id: wo-004, target_id: site-002 }
+  - { type: raised_at, source_id: wo-005, target_id: site-004 }
+  - { type: assigned_to, source_id: wo-004, target_id: tech-001 }
+  - { type: bills, source_id: inv-001, target_id: wo-004 }
