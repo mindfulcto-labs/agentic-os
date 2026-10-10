@@ -41,13 +41,13 @@ agentic-os run --agent dispatcher   # run a YAML-defined agent
 agentic-os run --goal "..."         # LLM planner, needs an API key
 ```
 
-## Three planes
+## How it is organised
 
-The system splits into three planes, named in plain industry terms:
+The code has three parts:
 
-- **Control plane.** The declarative surface: the domain ontology (YAML), the capability registry, principals and grants, policies, and agent definitions. Everything an operator sets before any agent runs.
+- **Configuration.** The domain graph, the capability registry, principals and grants, policies, and agent definitions. All of it is set before any agent runs.
 - **Runtime.** The governed loop: plan, governed invocation, memory, trace. The governor sits inside the loop and judges every step.
-- **Builder.** The surface for making new agents: write a YAML definition, validate it (`agentic-os agents validate`), and run it. Building an agent is writing YAML, not code.
+- **Agent definitions.** Each agent is described in a small YAML file, checked with `agentic-os agents validate`, and then run.
 
 ## How a governed run works
 
@@ -101,11 +101,11 @@ Before any of that, each allowed step passed eight recorded checks: capability e
 | `policy/` | Policy-as-code: small Python predicates loaded from `policies.yaml`, evaluated inside the loop before every invocation. |
 | `evals/` | An offline harness that replays eleven scripted fixtures and asserts governance outcomes: right capabilities allowed, denials fire with the right reasons, budgets enforced. It doubles as the acceptance suite. |
 | `observability/` | Structured JSON run traces (goal, plan, every invocation with its verdict and latency) written to `runs/`, plus the `agentic-os trace` renderer. |
-| `agents/` | The low-code layer: agent definitions in YAML (capabilities, purposes, risk ceiling, budgets, policies, planner), validated before they can run. |
+| `agents/` | Agent definitions in YAML (capabilities, purposes, risk ceiling, budgets, policies, planner), validated before they can run. |
 
 ## Defining an agent in YAML
 
-An agent is a YAML file, not a class:
+Each agent is described in a short YAML file:
 
 ```yaml
 name: dispatcher
